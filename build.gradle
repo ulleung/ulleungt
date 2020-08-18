@@ -1,10 +1,26 @@
+buildscript {
+    ext.kotlin_version = '1.4.0'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 plugins {
     id 'java'
     id 'antlr'
+    id'com.github.johnrengelman.shadow' version '5.2.0'
 }
+
+apply plugin: 'application'
+apply plugin: 'kotlin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group '한국.메인.울릉'
 version '0.1.0'
+
+mainClassName="한국.메인.울릉.Main"
 
 repositories {
     mavenCentral()
@@ -13,4 +29,18 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     antlr 'org.antlr:antlr4:4.7'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+generateGrammarSource {
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
