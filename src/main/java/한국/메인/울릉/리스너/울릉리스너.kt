@@ -3,12 +3,14 @@ package 한국.메인.울릉.리스너
 import 한국.메인.울릉.Antlr.ulleungBaseListener
 import 한국.메인.울릉.Antlr.ulleungParser
 import 한국.메인.울릉.Dok
+import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class 울릉리스너(fos: FileOutputStream) : ulleungBaseListener() {
+class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBaseListener() {
     var fos: FileOutputStream? = null;
     var sb: StringBuffer = StringBuffer()
-    var dok = Dok()
+    var dok = Dok(dokFiles)
 
     init {
         this.fos = fos
@@ -141,7 +143,7 @@ class 울릉리스너(fos: FileOutputStream) : ulleungBaseListener() {
 
         if (ctx?.type_name() != null) {
             sb.append(dok.typeNameContextToClassName(ctx?.type_name()))
-            parentName = dok.typeNameContextToClassName(ctx?.type_name())
+            parentName = ctx?.type_name()?.text!!
         }
 
         sb.append(".")

@@ -19,7 +19,16 @@ public class Main {
         File inputUlnFile = new File(filename);
         File outputJavaFile = new File(filename+".java");
 
+        File[] dokFiles = new File[args.length - 1];
+
         try{
+            for(int i = 1; i < args.length; i++)
+            {
+                File tempFile = new File(args[i]);
+
+                dokFiles[i-1] = tempFile;
+            }
+
             FileOutputStream fos = new FileOutputStream(outputJavaFile);
             FileInputStream fis = new FileInputStream(inputUlnFile);
 
@@ -34,7 +43,7 @@ public class Main {
 
             ulleungLexer lexer = new ulleungLexer(input);
             ulleungParser parser = new ulleungParser(new CommonTokenStream(lexer));
-            ParseTreeWalker.DEFAULT.walk(new 울릉리스너(fos), parser.program());
+            ParseTreeWalker.DEFAULT.walk(new 울릉리스너(fos, dokFiles), parser.program());
 
         } catch (Exception e) {
             e.printStackTrace();
