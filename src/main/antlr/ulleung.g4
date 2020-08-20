@@ -9,11 +9,11 @@ define_package: package_name PACKAGE_STATE;
 
 define_import: package_name PACKAGE_IMPORT;
 
-define_class: public_type? CLASS IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
+define_class: (type_name EXTEND)? public_type? CLASS IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
 
-define_global_var: public_type? STATIC? package_name IDENTIFIER (EQUALS new_object)?;
+define_global_var: public_type? STATIC? type_name_array IDENTIFIER (EQUALS new_object)?;
 
-define_function: public_type? STATIC? package_name? FUNCTION IDENTIFIER COLON (args REQUIRE)? statement* (COLON (VAR_VALUE | IDENTIFIER) RETURN)? SEMICOLON;
+define_function: public_type? STATIC? type_name_array? FUNCTION IDENTIFIER COLON (args REQUIRE)? statement* (COLON (VAR_VALUE | IDENTIFIER) RETURN)? SEMICOLON;
 
 /*
 렉서, 파서
@@ -36,11 +36,12 @@ STATIC: '정적';
 CLASS: '객체';
 
 // 함수 선언
-type_name: package_name ARRAY?;
+type_name: ('('package_name'.)')? IDENTIFIER;
+type_name_array: ('('package_name'.)')? IDENTIFIER ARRAY?;
 
 FUNCTION: '함수';
 
-args: type_name IDENTIFIER (', 'type_name IDENTIFIER)*;
+args: type_name_array IDENTIFIER (', 'type_name_array IDENTIFIER)*;
 REQUIRE: '요구';
 
 RETURN: '돌려주기';
@@ -50,7 +51,7 @@ RETURN: '돌려주기';
 passed_arg: method | VAR_VALUE | IDENTIFIER | calculation;
 passed_args: passed_arg (', ' passed_arg)*;
 
-new_object: package_name '('passed_args?')' CREATE;
+new_object: type_name '('passed_args?')' CREATE;
 CREATE: '생성';
 
 ADD: '+';
@@ -61,11 +62,13 @@ MODULAR: '%';
 
 calculation: (IDENTIFIER | VAR_VALUE | method) (ADD | SUBTRACT | MULTIPLY | DIVIDE | MODULAR) (IDENTIFIER | VAR_VALUE | method) ((ADD | SUBTRACT | MULTIPLY | DIVIDE | MODULAR) (IDENTIFIER | VAR_VALUE | method))*;
 
-method: package_name'('passed_args?')'('.'IDENTIFIER'('passed_args?')')*;
 equality: IDENTIFIER EQUALS (calculation | VAR_VALUE | IDENTIFIER | method);
-define_var: type_name IDENTIFIER (EQUALS (new_object | calculation | VAR_VALUE | IDENTIFIER | method))?;
+define_var: type_name_array IDENTIFIER (EQUALS (new_object | calculation | VAR_VALUE | IDENTIFIER | method))?;
+method: (type_name '.')? IDENTIFIER (first_passed_args)? ('.'IDENTIFIER('('passed_args?')')?)*;
 
-statement: method | equality | define_var | define_for | define_if;
+first_passed_args: '('passed_args?')';
+
+statement: define_var | equality | method | define_for | define_if;
 
 // 조건문
 
@@ -155,3 +158,4 @@ DOUBLEQOUTE: '"';
 EQUALS: '=';
 
 ARRAY: '의 배열';
+EXTEND: '를 상속하는' | '을 상속하는';

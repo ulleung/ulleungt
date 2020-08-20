@@ -111,6 +111,18 @@ public class ulleungBaseListener implements ulleungListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterType_name_array(ulleungParser.Type_name_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitType_name_array(ulleungParser.Type_name_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArgs(ulleungParser.ArgsContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -171,18 +183,6 @@ public class ulleungBaseListener implements ulleungListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMethod(ulleungParser.MethodContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMethod(ulleungParser.MethodContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterEquality(ulleungParser.EqualityContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -202,6 +202,30 @@ public class ulleungBaseListener implements ulleungListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDefine_var(ulleungParser.Define_varContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMethod(ulleungParser.MethodContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMethod(ulleungParser.MethodContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFirst_passed_args(ulleungParser.First_passed_argsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFirst_passed_args(ulleungParser.First_passed_argsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

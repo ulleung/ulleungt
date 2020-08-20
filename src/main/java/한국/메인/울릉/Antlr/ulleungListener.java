@@ -87,6 +87,16 @@ public interface ulleungListener extends ParseTreeListener {
 	 */
 	void exitType_name(ulleungParser.Type_nameContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ulleungParser#type_name_array}.
+	 * @param ctx the parse tree
+	 */
+	void enterType_name_array(ulleungParser.Type_name_arrayContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ulleungParser#type_name_array}.
+	 * @param ctx the parse tree
+	 */
+	void exitType_name_array(ulleungParser.Type_name_arrayContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ulleungParser#args}.
 	 * @param ctx the parse tree
 	 */
@@ -137,16 +147,6 @@ public interface ulleungListener extends ParseTreeListener {
 	 */
 	void exitCalculation(ulleungParser.CalculationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ulleungParser#method}.
-	 * @param ctx the parse tree
-	 */
-	void enterMethod(ulleungParser.MethodContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ulleungParser#method}.
-	 * @param ctx the parse tree
-	 */
-	void exitMethod(ulleungParser.MethodContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ulleungParser#equality}.
 	 * @param ctx the parse tree
 	 */
@@ -166,6 +166,26 @@ public interface ulleungListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDefine_var(ulleungParser.Define_varContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ulleungParser#method}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethod(ulleungParser.MethodContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ulleungParser#method}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethod(ulleungParser.MethodContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ulleungParser#first_passed_args}.
+	 * @param ctx the parse tree
+	 */
+	void enterFirst_passed_args(ulleungParser.First_passed_argsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ulleungParser#first_passed_args}.
+	 * @param ctx the parse tree
+	 */
+	void exitFirst_passed_args(ulleungParser.First_passed_argsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ulleungParser#statement}.
 	 * @param ctx the parse tree
