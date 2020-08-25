@@ -11,7 +11,7 @@ define_import: package_name PACKAGE_IMPORT;
 
 define_class: (type_name EXTEND)? public_type? CLASS IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
 
-define_global_var: public_type? STATIC? type_name_array IDENTIFIER (EQUALS new_object)?;
+define_global_var: public_type? STATIC? type_name_array IDENTIFIER (EQUALS (new_object | VAR_VALUE))?;
 
 define_function: public_type? STATIC? type_name_array? FUNCTION IDENTIFIER COLON (args REQUIRE)? statement* (COLON (VAR_VALUE | IDENTIFIER) RETURN)? SEMICOLON;
 

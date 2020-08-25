@@ -77,6 +77,9 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
 
         if (ctx?.EQUALS() != null)
             sb.append("= ")
+
+        if(ctx?.VAR_VALUE() != null)
+            sb.append(ctx?.VAR_VALUE())
     }
 
     override fun exitDefine_global_var(ctx: ulleungParser.Define_global_varContext?) {
