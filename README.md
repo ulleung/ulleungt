@@ -15,3 +15,7 @@
 - [ ] 외부 객체 및 함수의 번역을 불러올 수 있는 매니저 "독"
 - [ ] 울릉으로 프로그래밍한 울릉 (부트스트래핑)
 - [ ] 울릉 -> 자바 바이트코드 컴파일러 "ulleungc"
+
+## 설치
+- [Jar 파일](https://github.com/ulleung/ulleungt/releases)
+- [윈도우용 래퍼](https://github.com/ulleung/ulleungw-windows) - 개발중
