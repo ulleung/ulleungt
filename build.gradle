@@ -18,7 +18,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group '한국.메인.울릉'
-version '2020.08.25.01'
+version '2020.09.09.01'
 
 mainClassName="한국.메인.울릉.Main"
 
