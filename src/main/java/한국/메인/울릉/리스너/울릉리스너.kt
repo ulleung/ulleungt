@@ -4,13 +4,15 @@ import 한국.메인.울릉.Antlr.ulleungBaseListener
 import 한국.메인.울릉.Antlr.ulleungParser
 import 한국.메인.울릉.Dok
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBaseListener() {
     var fos: FileOutputStream? = null;
     var sb: StringBuffer = StringBuffer()
     var dok = Dok(dokFiles)
+    var dokTypeList = ArrayList<Triple<String, String, String>>() // 변수명, 스코프, 타입
+
+    var currentExtendingClass = "null"
 
     init {
         this.fos = fos
@@ -40,6 +42,43 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
         sb.append("class ")
         sb.append(ctx?.IDENTIFIER()?.text + " ")
 
+        var addIdx = if (ctx?.EXTEND() != null) 1 else 0
+
+        if (ctx?.EXTEND() != null) {
+            sb.append("extends ")
+            sb.append(dok.typeNameContextToClassName(ctx?.type_name(0)) + " ")
+            currentExtendingClass = ctx?.type_name(0)?.IDENTIFIER()?.text!!
+        }
+
+        if(ctx?.IMPLEMENT() != null) {
+            sb.append("implements ")
+            for(i in addIdx until ctx?.type_name()?.size!!) {
+                if(i != addIdx) {
+                    sb.append(", ")
+                }
+                sb.append(dok.typeNameContextToClassName(ctx?.type_name(i)))
+            }
+        }
+
+        sb.append("{")
+    }
+
+    override fun exitDefine_class(ctx: ulleungParser.Define_classContext?) {
+        sb.append("}")
+    }
+
+    override fun enterDefine_interface(ctx: ulleungParser.Define_interfaceContext?) {
+        val publicType = ctx?.public_type()?.text
+        when (publicType) {
+            null -> sb.append("public ")
+            "들춰진" -> sb.append("public ")
+            "감춰진" -> sb.append("protected ")
+            "숨겨진" -> sb.append("private ")
+        }
+
+        sb.append("interface ")
+        sb.append(ctx?.IDENTIFIER()?.text + " ")
+
         if (ctx?.EXTEND() != null) {
             sb.append("extends ")
             sb.append(dok.typeNameContextToClassName(ctx?.type_name()) + " ")
@@ -48,7 +87,7 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
         sb.append("{")
     }
 
-    override fun exitDefine_class(ctx: ulleungParser.Define_classContext?) {
+    override fun exitDefine_interface(ctx: ulleungParser.Define_interfaceContext?) {
         sb.append("}")
     }
 
@@ -61,6 +100,9 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
     }
 
     override fun enterDefine_global_var(ctx: ulleungParser.Define_global_varContext?) {
+        if (ctx?.OVERRIDE() != null)
+            sb.append("@Override ")
+
         val publicType = ctx?.public_type()?.text
         when (publicType) {
             null -> sb.append("public ")
@@ -71,6 +113,9 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
 
         if (ctx?.STATIC() != null)
             sb.append("static ")
+
+        if(ctx?.ABSTRACT() != null)
+            sb.append("abstract ")
 
         sb.append(dok.typeNameArrayContextToClassName(ctx?.type_name_array()) + " ")
         sb.append(ctx?.IDENTIFIER()?.text + " ")
@@ -80,6 +125,8 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
 
         if(ctx?.VAR_VALUE() != null)
             sb.append(ctx?.VAR_VALUE())
+
+        dokTypeList.add(Triple(ctx?.IDENTIFIER()?.text!!, "#GLOBAL", ctx?.type_name_array()?.IDENTIFIER()?.text!!))
     }
 
     override fun exitDefine_global_var(ctx: ulleungParser.Define_global_varContext?) {
@@ -87,6 +134,9 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
     }
 
     override fun enterDefine_function(ctx: ulleungParser.Define_functionContext?) {
+        if (ctx?.OVERRIDE() != null)
+            sb.append("@Override ")
+
         val publicType = ctx?.public_type()?.text
         when (publicType) {
             null -> sb.append("public ")
@@ -97,6 +147,9 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
 
         if (ctx?.STATIC() != null)
             sb.append("static ")
+
+        if(ctx?.ABSTRACT() != null)
+            sb.append("abstract")
 
         if (ctx?.type_name_array() == null)
             sb.append("void ")
@@ -135,6 +188,7 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
     }
 
     override fun exitMethod(ctx: ulleungParser.MethodContext?) {
+
         if (ctx?.parent?.ruleIndex == ulleungParser.RULE_passed_arg)
             return
         if (ctx?.parent?.ruleIndex == ulleungParser.RULE_compare)
@@ -144,12 +198,39 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
 
         var parentName = "this"
 
-        if (ctx?.type_name() != null) {
-            sb.append(dok.typeNameContextToClassName(ctx?.type_name()))
-            parentName = ctx?.type_name()?.text!!
+        var parentContext = ctx?.parent
+
+        while (true) {
+            if(parentContext?.ruleIndex == ulleungParser.RULE_define_function)
+                break
+            parentContext = parentContext?.parent
         }
 
-        sb.append(".")
+        var isVariable = false
+
+        var gotIt = Triple("", "", "")
+        dokTypeList.forEach {
+            if(it.first == ctx?.type_name()?.IDENTIFIER()?.text && (it.second == "#GLOBAL" || it.second == (parentContext as ulleungParser.Define_functionContext)?.IDENTIFIER(0)?.text!!)) {
+                isVariable = true;
+                gotIt = it;
+                parentName = it.third;
+            }
+        }
+
+        if (ctx?.type_name() != null) { // 외부 클래스에서 불러올 경우 실행, 내부 함수 (상속 등) 를 실행할 경우 실행 안함
+            if(ctx?.type_name()?.IDENTIFIER()?.text!! == "상위") {
+                sb.append("super.")
+                parentName = currentExtendingClass
+            } else {
+                sb.append(if(!isVariable) dok.typeNameContextToClassName(ctx?.type_name()) else ctx?.type_name()?.IDENTIFIER()?.text)
+                parentName = ctx?.type_name()?.text!!
+                sb.append(".")
+            }
+        }
+
+
+        if (dok.doesClassExist(ctx?.type_name()?.IDENTIFIER()?.text!!)) parentName = ctx?.type_name()?.IDENTIFIER()?.text!!
+        else if (isVariable) parentName = gotIt.third
 
         if (ctx?.first_passed_args()?.passed_args() != null) {
             sb.append(dok.stringToMethodName(ctx?.IDENTIFIER(0)?.text!!, parentName))
@@ -162,8 +243,6 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
         } else {
             sb.append(dok.stringToVarName(ctx?.IDENTIFIER(0)?.text!!, parentName))
         }
-
-        parentName = ctx?.IDENTIFIER(0)?.text!!
 
         if (ctx?.IDENTIFIER().size > 1) {
             for (i in 1 until ctx.IDENTIFIER()?.size!!) {
@@ -200,6 +279,19 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
         if (ctx?.IDENTIFIER(1) != null) {
             sb.append(ctx.IDENTIFIER(1)?.text)
         }
+        if (ctx?.change_type() != null) {
+            sb.append("("+dok.typeNameContextToClassName(ctx.change_type()?.type_name())+")")
+
+            if (ctx.change_type()?.calculation() != null) {
+                sb.append(ctx.calculation()?.text)
+            }
+            if (ctx.change_type()?.VAR_VALUE() != null) {
+                sb.append(ctx.change_type()?.VAR_VALUE()?.text)
+            }
+            if (ctx.change_type()?.IDENTIFIER() != null) {
+                sb.append(ctx.change_type()?.VAR_VALUE()?.text)
+            }
+        }
     }
 
     override fun exitEquality(ctx: ulleungParser.EqualityContext?) {
@@ -230,7 +322,23 @@ class 울릉리스너(fos: FileOutputStream, dokFiles: Array<File>) : ulleungBas
             if (ctx.IDENTIFIER(1) != null) {
                 sb.append(ctx.IDENTIFIER(1)?.text)
             }
+            if (ctx?.change_type() != null) {
+                sb.append("("+dok.typeNameContextToClassName(ctx.change_type()?.type_name())+")")
+
+                if (ctx.change_type()?.calculation() != null) {
+                    sb.append(ctx.calculation()?.text)
+                }
+                if (ctx.change_type()?.VAR_VALUE() != null) {
+                    sb.append(ctx.change_type()?.VAR_VALUE()?.text)
+                }
+                if (ctx.change_type()?.IDENTIFIER() != null) {
+                    sb.append(ctx.change_type()?.VAR_VALUE()?.text)
+                }
+            }
         }
+
+        dokTypeList.add(Triple(ctx?.IDENTIFIER(0)?.text!!, (ctx?.parent?.parent as ulleungParser.Define_functionContext).IDENTIFIER(0)?.text!!, ctx?.type_name_array()?.IDENTIFIER()?.text!!))
+
     }
 
     override fun exitDefine_var(ctx: ulleungParser.Define_varContext?) {
