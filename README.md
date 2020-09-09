@@ -19,3 +19,6 @@
 ## 설치
 - [Jar 파일](https://github.com/ulleung/ulleungt/releases)
 - [윈도우용 래퍼](https://github.com/ulleung/ulleungw-windows) - 개발중
+```bash
+ulleungw -get-latest    
+```
