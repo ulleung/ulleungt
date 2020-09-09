@@ -55,6 +55,22 @@ class Dok(dokFiles: Array<File>) {
         }
     }
 
+    fun doesClassExist(name: String) : Boolean {
+        classList.forEach {
+            if(it.first == name)
+                return true
+        }
+        return false
+    }
+
+    fun doesMethodExist(className: String, methodName: String) : Boolean {
+        methodList.forEach {
+            if(it.first == methodName && it.second == className)
+                return true
+        }
+        return false
+    }
+
     fun typeNameContextToClassName(ctx: ulleungParser.Type_nameContext?): String {
         var returnStringBuilder = StringBuilder()
 
