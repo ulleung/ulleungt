@@ -3,17 +3,19 @@ grammar ulleung;
 골격
 */
 
-program: define_package define_import* define_class*;
+program: define_package define_import* (define_class | define_interface)*;
 
 define_package: package_name PACKAGE_STATE;
 
 define_import: package_name PACKAGE_IMPORT;
 
-define_class: (type_name EXTEND)? public_type? CLASS IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
+define_class: (type_name EXTEND)? (type_name? (', ' type_name)* IMPLEMENT)? public_type? CLASS IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
 
-define_global_var: public_type? STATIC? type_name_array IDENTIFIER (EQUALS (new_object | VAR_VALUE))?;
+define_interface: (type_name EXTEND)? public_type? INTERFACE IDENTIFIER COLON (define_global_var | define_function)* SEMICOLON;
 
-define_function: public_type? STATIC? type_name_array? FUNCTION IDENTIFIER COLON (args REQUIRE)? statement* (COLON (VAR_VALUE | IDENTIFIER) RETURN)? SEMICOLON;
+define_global_var: OVERRIDE? public_type? STATIC? ABSTRACT? type_name_array IDENTIFIER (EQUALS (new_object | VAR_VALUE))?;
+
+define_function: OVERRIDE? public_type? STATIC? ABSTRACT? type_name_array? FUNCTION IDENTIFIER COLON (args REQUIRE)? statement* (COLON (VAR_VALUE | IDENTIFIER) RETURN)? SEMICOLON;
 
 /*
 렉서, 파서
@@ -31,9 +33,22 @@ public_type: PUBLIC | PROTECTED | PRIVATE;
 
 STATIC: '정적';
 
+// 추상여부
+
+ABSTRACT: '추상적';
+
 // 클래스
 
 CLASS: '객체';
+
+// 상속
+
+EXTEND: '를 상속' '하는'? | '을 상속' '하는'?;
+OVERRIDE: '덧씌운';
+
+// 인터페이스
+INTERFACE: '틀';
+IMPLEMENT: '을 구현' '하는'? | '를 구현' '하는'?;
 
 // 함수 선언
 type_name: ('('package_name'.)')? IDENTIFIER;
@@ -62,8 +77,10 @@ MODULAR: '%';
 
 calculation: (IDENTIFIER | VAR_VALUE | method) (ADD | SUBTRACT | MULTIPLY | DIVIDE | MODULAR) (IDENTIFIER | VAR_VALUE | method) ((ADD | SUBTRACT | MULTIPLY | DIVIDE | MODULAR) (IDENTIFIER | VAR_VALUE | method))*;
 
-equality: IDENTIFIER EQUALS (calculation | VAR_VALUE | IDENTIFIER | method);
-define_var: type_name_array IDENTIFIER (EQUALS (new_object | calculation | VAR_VALUE | IDENTIFIER | method))?;
+change_type: '('type_name')' (calculation | VAR_VALUE | IDENTIFIER | method);
+
+equality: IDENTIFIER EQUALS (change_type | calculation | VAR_VALUE | IDENTIFIER | method);
+define_var: type_name_array IDENTIFIER (EQUALS (new_object | change_type | calculation | VAR_VALUE | IDENTIFIER | method))?;
 method: (type_name '.')? IDENTIFIER (first_passed_args)? ('.'IDENTIFIER('('passed_args?')')?)*;
 
 first_passed_args: '('passed_args?')';
@@ -158,4 +175,3 @@ DOUBLEQOUTE: '"';
 EQUALS: '=';
 
 ARRAY: '의 배열';
-EXTEND: '를 상속하는' | '을 상속하는';

@@ -63,6 +63,18 @@ public class ulleungBaseListener implements ulleungListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDefine_interface(ulleungParser.Define_interfaceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefine_interface(ulleungParser.Define_interfaceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDefine_global_var(ulleungParser.Define_global_varContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -178,6 +190,18 @@ public class ulleungBaseListener implements ulleungListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCalculation(ulleungParser.CalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterChange_type(ulleungParser.Change_typeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitChange_type(ulleungParser.Change_typeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

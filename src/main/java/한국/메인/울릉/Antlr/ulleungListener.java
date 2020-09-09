@@ -47,6 +47,16 @@ public interface ulleungListener extends ParseTreeListener {
 	 */
 	void exitDefine_class(ulleungParser.Define_classContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ulleungParser#define_interface}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefine_interface(ulleungParser.Define_interfaceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ulleungParser#define_interface}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefine_interface(ulleungParser.Define_interfaceContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ulleungParser#define_global_var}.
 	 * @param ctx the parse tree
 	 */
@@ -146,6 +156,16 @@ public interface ulleungListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCalculation(ulleungParser.CalculationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ulleungParser#change_type}.
+	 * @param ctx the parse tree
+	 */
+	void enterChange_type(ulleungParser.Change_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ulleungParser#change_type}.
+	 * @param ctx the parse tree
+	 */
+	void exitChange_type(ulleungParser.Change_typeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ulleungParser#equality}.
 	 * @param ctx the parse tree
